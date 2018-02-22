@@ -15,6 +15,16 @@
     <scalaplugin.version>3.3.1</scalaplugin.version>
   </properties>
 
+
+  <repositories>
+    <!-- repository for confluent library-->
+    <repository>
+      <id>confluent</id>
+      <url>http://packages.confluent.io/maven/</url>
+    </repository>
+  </repositories>
+
+
   <dependencies>
     <dependency>
       <groupId>org.scala-lang</groupId>
@@ -58,6 +68,20 @@
       <version>1.8.2</version>
     </dependency>
 
+
+
+    <dependency>
+      <groupId>com.databricks</groupId>
+      <artifactId>spark-avro_2.11</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>io.confluent</groupId>
+      <artifactId>kafka-avro-serializer</artifactId>
+      <version>4.0.0</version>
+    </dependency>
 
 
   </dependencies>
