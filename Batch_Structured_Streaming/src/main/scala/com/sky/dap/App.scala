@@ -11,9 +11,10 @@ import org.apache.spark.sql.expressions.UserDefinedFunction
 import io.confluent.kafka.serializers.KafkaAvroDeserializer
 import io.confluent.kafka.schemaregistry.client._
 import org.apache.spark.sql.api.java.UDF1
+import org.apache.spark.sql.functions._
 
 
-
+case class Subtable(col1: String, col2: String)
 
 
 
@@ -152,15 +153,39 @@ object App {
         .format("kafka")
         .option("kafka.bootstrap.servers", "localhost:9092")
         //.option("kafka.bootstrap.servers", "10.170.14.37:9092")
-        .option("subscribe", "test1")
+        .option("subscribe", "test")
         //.option("subscribe", "dead.letter.queue")
         .option("startingOffsets", "earliest")
         .load()
 
 
-      val SCHEMA_STRING = "{\"type\":\"record\",\"name\":\"myrecord\",\"fields\":[{\"name\":\"nome\",\"type\":\"string\"},{\"name\":\"cognome\",\"type\":\"string\"}]}"
-      val schema: org.apache.avro.Schema = new org.apache.avro.Schema.Parser().parse(SCHEMA_STRING) // we use a Parser to read our schema definition and create a Schema object.
-      val typest = com.databricks.spark.avro.SchemaConverters.toSqlType(schema).dataType.asInstanceOf[StructType]; //da tipi di schema avro a tipi spark sql
+      /*root
+      |-- key: binary (nullable = true)
+      |-- value: binary (nullable = true)
+      |-- topic: string (nullable = true)
+      |-- partition: integer (nullable = true)
+      |-- offset: long (nullable = true)
+      |-- timestamp: timestamp (nullable = true)
+      |-- timestampType: integer (nullable = true)
+      */
+
+      df.printSchema()
+
+
+      val avro_decoder = udf((data : Array[Byte]) => {
+
+        //Subtable(subtable.getSeq[Int](0).map(_ + 2), subtable.getString(1))
+
+        val SCHEMA_STRING = "{\"type\":\"record\",\"name\":\"myrecord\",\"fields\":[{\"name\":\"nome\",\"type\":\"string\"},{\"name\":\"cognome\",\"type\":\"string\"}]}"
+        val schema: org.apache.avro.Schema = new org.apache.avro.Schema.Parser().parse(SCHEMA_STRING) // we use a Parser to read our schema definition and create a Schema object.
+        val schemaRegistry: SchemaRegistryClient = new CachedSchemaRegistryClient("http://localhost:8081/", 1)
+        //Confluent Avro deserializer
+        val deserializer = new KafkaAvroDeserializer(schemaRegistry)
+        val result2: GenericRecord = deserializer.deserialize("", data, schema).asInstanceOf[GenericRecord] // questo metodo restituisce un Object ma io lo casto a genericRecord
+
+        Subtable(result2.get("nome").toString(),result2.get("cognome").toString()) //creo una case classche sembra una delle strutture complesse che puo restituire un udf sql
+        }
+      )
 
 
 
@@ -168,10 +193,12 @@ object App {
 
 
       val df1 : Dataset[Row] = df
+        .select("value")
+        .withColumn("new_column",avro_decoder(df("value")))
         //.selectExpr("deserialize(CAST(value AS STRING)) as rows")
-        .selectExpr("deserialize(value) as rows")
+        //.selectExpr("value as rows")
         //.selectExpr("deserialize(CAST(value AS STRING)) as rows")
-        .select("rows.*")
+        //.select("rows.*")
 
       df1.show(100,false)
 
