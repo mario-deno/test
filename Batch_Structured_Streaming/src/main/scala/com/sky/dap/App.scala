@@ -151,15 +151,19 @@ object App {
       val df : Dataset[Row] = spark
         .read
         .format("kafka")
-        .option("kafka.bootstrap.servers", "localhost:9092")
-        //.option("kafka.bootstrap.servers", "10.170.14.37:9092")
-        .option("subscribe", "test")
-        //.option("subscribe", "dead.letter.queue")
+        //.option("kafka.bootstrap.servers", "localhost:9092")
+        .option("kafka.bootstrap.servers", "10.170.14.37:9092")
+        //.option("subscribe", "test")
+        .option("subscribe", "dead.letter.queue")
         .option("startingOffsets", "earliest")
         .load()
 
 
-      /*root
+
+      df.printSchema()
+
+      /*schema of dead-letter-queue
+      root
       |-- key: binary (nullable = true)
       |-- value: binary (nullable = true)
       |-- topic: string (nullable = true)
@@ -169,32 +173,32 @@ object App {
       |-- timestampType: integer (nullable = true)
       */
 
-      df.printSchema()
-
 
       val avro_decoder = udf((data : Array[Byte]) => {
 
-        //Subtable(subtable.getSeq[Int](0).map(_ + 2), subtable.getString(1))
+        //val SCHEMA_STRING = "{\"type\":\"record\",\"name\":\"myrecord\",\"fields\":[{\"name\":\"nome\",\"type\":\"string\"},{\"name\":\"cognome\",\"type\":\"string\"}]}"
+        //val schema2: org.apache.avro.Schema = new org.apache.avro.Schema.Parser().parse(SCHEMA_STRING) // we use a Parser to read our schema definition and create a Schema object.
 
-        val SCHEMA_STRING = "{\"type\":\"record\",\"name\":\"myrecord\",\"fields\":[{\"name\":\"nome\",\"type\":\"string\"},{\"name\":\"cognome\",\"type\":\"string\"}]}"
-        val schema: org.apache.avro.Schema = new org.apache.avro.Schema.Parser().parse(SCHEMA_STRING) // we use a Parser to read our schema definition and create a Schema object.
-        val schemaRegistry: SchemaRegistryClient = new CachedSchemaRegistryClient("http://localhost:8081/", 1)
+        val schemaRegistry: SchemaRegistryClient = new CachedSchemaRegistryClient("http://localhost:19700/", 1)
+        val schemaMetadata : io.confluent.kafka.schemaregistry.client.SchemaMetadata = schemaRegistry.getLatestSchemaMetadata("dead.letter.queue-value")
+        val schema : org.apache.avro.Schema = schemaRegistry.getById(schemaMetadata.getId)
+
+        //print("schema ID = " + schemaMetadata.getId.toString)
+
         //Confluent Avro deserializer
         val deserializer = new KafkaAvroDeserializer(schemaRegistry)
-        val result2: GenericRecord = deserializer.deserialize("", data, schema).asInstanceOf[GenericRecord] // questo metodo restituisce un Object ma io lo casto a genericRecord
+        val result: GenericRecord = deserializer.deserialize("", data, schema).asInstanceOf[GenericRecord] // questo metodo restituisce un Object ma io lo casto a genericRecord
 
-        Subtable(result2.get("nome").toString(),result2.get("cognome").toString()) //creo una case classche sembra una delle strutture complesse che puo restituire un udf sql
+
+        Subtable(result.get("message").toString(),result.get("messageType").toString()) //creo una case class che sembra una delle strutture complesse che puo restituire un udf sql
         }
       )
 
 
-
-
-
-
       val df1 : Dataset[Row] = df
         .select("value")
-        .withColumn("new_column",avro_decoder(df("value")))
+        .withColumn("decoded_column",avro_decoder(df("value")))
+        .select("decoded_column")
         //.selectExpr("deserialize(CAST(value AS STRING)) as rows")
         //.selectExpr("value as rows")
         //.selectExpr("deserialize(CAST(value AS STRING)) as rows")
