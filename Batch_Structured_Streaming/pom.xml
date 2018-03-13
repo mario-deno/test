@@ -38,6 +38,7 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_2.11</artifactId>
       <version>2.2.1</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
@@ -45,6 +46,7 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-sql_2.11</artifactId>
       <version>2.2.1</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming -->
@@ -52,6 +54,7 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming_2.11</artifactId>
       <version>2.2.1</version>
+      <scope>provided</scope>
     </dependency>
 
       <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-spark-sql-kafka (structured streaming with kafka as Source)-->
@@ -59,6 +62,7 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-sql-kafka-0-10_2.11</artifactId>
       <version>2.2.1</version>
+<!--  <scope>provided</scope> -->  <!-- Spark-submit doesnt' provide  spark-sql-kafka-0-10_2.11-->
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.apache.avro/avro -->
@@ -88,7 +92,6 @@
 
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
-    <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
@@ -101,6 +104,24 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+          <executions>
+            <execution>
+              <phase>package</phase> <!-- bind to the packaging phase -->
+              <goals>
+                <goal>single</goal> <!-- execute the single goal-->
+              </goals>
+            </execution>
+          </executions>
       </plugin>
     </plugins>
   </build>
