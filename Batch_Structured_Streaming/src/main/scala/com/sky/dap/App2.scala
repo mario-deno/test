@@ -41,7 +41,8 @@ object App2 {
       //val SCHEMA_STRING = "{\"type\":\"record\",\"name\":\"myrecord\",\"fields\":[{\"name\":\"nome\",\"type\":\"string\"},{\"name\":\"cognome\",\"type\":\"string\"}]}"
       //val schema2: org.apache.avro.Schema = new org.apache.avro.Schema.Parser().parse(SCHEMA_STRING) // we use a Parser to read our schema definition and create a Schema object.
 
-      val schemaRegistry: SchemaRegistryClient = new CachedSchemaRegistryClient("http://localhost:19700/", 1)
+      //val schemaRegistry: SchemaRegistryClient = new CachedSchemaRegistryClient("http://localhost:19700/", 1)
+      val schemaRegistry: SchemaRegistryClient = new CachedSchemaRegistryClient("http://schema-registry.marathon.mesos:19700", 1)
       val schemaMetadata : io.confluent.kafka.schemaregistry.client.SchemaMetadata = schemaRegistry.getLatestSchemaMetadata("dead.letter.queue-value")
       val schema : org.apache.avro.Schema = schemaRegistry.getById(schemaMetadata.getId)
 
@@ -66,7 +67,8 @@ object App2 {
       .readStream
       .format("kafka")
       //.option("kafka.bootstrap.servers", "localhost:9092")
-      .option("kafka.bootstrap.servers", "10.170.14.37:9092")
+      //.option("kafka.bootstrap.servers", "10.170.14.37:9092")
+      .option("kafka.bootstrap.servers", "kafka-0-broker.confluent-kafka.mesos:9092,kafka-1-broker.confluent-kafka.mesos:9092,kafka-2-broker.confluent-kafka.mesos:9092,kafka-3-broker.confluent-kafka.mesos:9092,kafka-4-broker.confluent-kafka.mesos:9092")
       //.option("subscribe", "test")
       .option("subscribe", "dead.letter.queue")
       .option("startingOffsets", "earliest")
