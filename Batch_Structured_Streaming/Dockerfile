@@ -14,6 +14,6 @@ ENV SUBMIT_ARGS="--conf spark.executor.home=/opt/spark/dist \
 --conf spark.mesos.driver.frameworkId=driver-struct_str \
 --conf spark.app.name=struct-str_avro"
 ADD ./target/Batch_Structured_Streaming-1.0-SNAPSHOT-jar-with-dependencies.jar /Batch_Structured_Streaming-1.0-SNAPSHOT-jar-with-dependencies.jar
-CMD $SPARK_HOME/bin/spark-submit --master $SPARK_MASTER --deploy-mode client --class $SPARK_CLASS $SUBMIT_ARGS /Batch_Structured_Streaming-1.0-SNAPSHOT-jar-with-dependencies.jar
+CMD $SPARK_HOME/bin/spark-submit --master $SPARK_MASTER --deploy-mode client --class $SPARK_CLASS /Batch_Structured_Streaming-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 
