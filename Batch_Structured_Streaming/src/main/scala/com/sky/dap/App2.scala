@@ -28,7 +28,7 @@ object App2 {
     val spark = SparkSession
       .builder()
       .appName("SparkStructuredStreaming")
-      .master("local[2]")
+      //.master("local[2]")
       .getOrCreate()
 
     import spark.implicits._
