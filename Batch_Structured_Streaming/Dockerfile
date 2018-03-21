@@ -3,7 +3,7 @@ ENV SPARK_HOME /opt/spark/dist
 ENV SPARK_CLASS com.sky.dap.App2
 ENV SPARK_MASTER mesos://10.74.51.194:5050
 ENV SUBMIT_ARGS="--conf spark.executor.home=/opt/spark/dist \
---conf spark.mesos.executor.docker.image=artifacts.ath.bskyb.com:5001/skydap/test-structured_streaming:003 \
+--conf spark.mesos.executor.docker.image=artifacts.ath.bskyb.com:5003/skydap/test-structured_streaming:003 \
 --conf spark.ssl.noCertVerification=true \
 --conf spark.cores.max=5 \
 --conf spark.driver.cores=2 \
