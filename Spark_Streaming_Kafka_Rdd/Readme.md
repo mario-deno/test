@@ -19,13 +19,14 @@ Spark streaming is executed by marathon. Marathon use a custom docker image (bui
     docker build -f Dockerfile --force-rm -t "artifacts.ath.bskyb.com:5001/skydap/eu_portability_identity_listener" . 
     #push the image to remote repository 
     docker push artifacts.ath.bskyb.com:5001/skydap/eu_portability_identity_listener
-    #replace some tag image with the following string into marathon.json
+    #replace some tag image with the following string into marathon_dev.json
     sed -i 's#"image":.*#"image": "artifacts.ath.bskyb.com:5003/skydap/eu_portability_identity_listener_dev",#g' marathon_dev.json
     sed -i 's#\<env\>#test#g' marathon_dev.json
     sed -i 's#\<name_job\>#identity-listener#g' marathon_dev.json 
     #deploy marathon app 
     ./serviceAddOrUpdateV2.sh dev-uk marathon_dev.json
 
+Three marathon files: one for each environment
 
 ## architecture
 
