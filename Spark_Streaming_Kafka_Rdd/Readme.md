@@ -29,4 +29,5 @@ Spark streaming is executed by marathon. Marathon use a custom docker image (bui
 
 ## architecture
 
-[!architecture](https://raw.githubusercontent.com/mario-deno/test/master/Spark_Streaming_Kafka_Rdd/diagram.png)
+![architecture](https://raw.githubusercontent.com/mario-deno/test/master/Spark_Streaming_Kafka_Rdd/diagram.png)
+
