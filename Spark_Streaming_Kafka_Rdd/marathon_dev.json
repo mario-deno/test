@@ -1,0 +1,80 @@
+{
+    "id": "/dap-adm/<env>/eu-portability/<name_job>",
+    "instances": 1,
+    "cpus": 1,
+    "mem": 2048,
+    "disk": 0,
+    "gpus": 0,
+    "container": {
+      "type": "DOCKER",
+      "volumes": [],
+      "docker": {
+        "image": "",
+        "privileged": false,
+        "forcePullImage": true
+      }
+    },
+    "env": {
+      "CASSANDRA_KEYSPACE": "euportability_test"
+    },
+    "upgradeStrategy": {
+      "minimumHealthCapacity": 1,
+      "maximumOverCapacity": 1
+    },
+    "unreachableStrategy": {
+      "inactiveAfterSeconds": 300,
+      "expungeAfterSeconds": 600
+    },
+    "killSelection": "YOUNGEST_FIRST",
+    "portDefinitions": [
+      {
+        "port": 4040,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4041,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4042,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4043,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4044,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4045,
+        "protocol": "tcp"
+      },            
+      {
+        "port": 4046,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4047,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4048,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4049,
+        "protocol": "tcp"
+      },            
+      {
+        "port": 4050,
+        "protocol": "tcp"
+      },
+      {
+        "port": 4051,
+        "protocol": "tcp"
+      }
+    ],
+    "requirePorts": true
+  }
